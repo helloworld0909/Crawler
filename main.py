@@ -4,12 +4,12 @@ from spider import Spider
 from domain import *
 from general import *
 
-PROJECT_NAME = 'helloworld09'
-HOMEPAGE = 'http://helloworld09.com/'
+PROJECT_NAME = 'thenewboston'
+HOMEPAGE = 'http://thenewboston.com/'
 DOMAIN_NAME = get_domain_name(HOMEPAGE)
 QUEUE_FILE = PROJECT_NAME + '/queue.txt'
 CRAWLED_FILE = PROJECT_NAME + '/crawled.txt'
-NUMBER_OF_THREADS = 8
+NUMBER_OF_THREADS = 16
 queue = Queue()
 Spider(PROJECT_NAME, HOMEPAGE, DOMAIN_NAME)
 
@@ -24,9 +24,13 @@ def create_workers():
 
 # Do the next job in the queue
 def work():
+    count = 0
     while True:
         url = queue.get()
         Spider.crawl_page(threading.current_thread().name, url)
+        count += 1
+        if count % 100 == 0:
+            Spider.update_files()
         queue.task_done()
 
 
@@ -48,3 +52,4 @@ def crawl():
 
 create_workers()
 crawl()
+Spider.update_files()
